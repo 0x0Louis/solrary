@@ -365,4 +365,66 @@ library EnumerableMap {
     function remove(Bytes32Set storage self, bytes32 value) internal returns (bool) {
         return _remove(self._inner, _BYTES32_SET_OFFSET, value);
     }
+
+    /** Uint Set */
+
+    /**
+     * @dev Structure to represent a set of uint256 values.
+     */
+    struct UintSet {
+        EnumerableMapping _inner;
+    }
+
+    uint8 private constant _UINT_SET_OFFSET = 0;
+
+    // uint256 private constant _UINT_SET_MASK = type(uint256).max; // unused
+
+    /**
+     * @notice Returns the uint256 value at the given index.
+     * @param self The uint256 set to query.
+     * @param index The index.
+     * @return value The value at the given index.
+     */
+    function at(UintSet storage self, uint256 index) internal view returns (uint256 value) {
+        value = uint256(_at(self._inner, index));
+    }
+
+    /**
+     * @notice Returns the number of elements in the set.
+     * @param self The uint256 set to query.
+     * @return The number of elements in the set.
+     */
+    function length(UintSet storage self) internal view returns (uint256) {
+        return _length(self._inner);
+    }
+
+    /**
+     * @notice Returns true if the set contains the given value.
+     * @param self The uint256 set to query.
+     * @param value The uint256 value.
+     * @return True if the set contains the given value.
+     */
+    function contains(UintSet storage self, uint256 value) internal view returns (bool) {
+        return _contains(self._inner, bytes32(value));
+    }
+
+    /**
+     * @notice Adds a value to the set.
+     * @param self The uint256 set to update.
+     * @param value The uint256 value.
+     * @return True if the value was added, that is if the value was not already in the set.
+     */
+    function add(UintSet storage self, uint256 value) internal returns (bool) {
+        return _add(self._inner, _UINT_SET_OFFSET, bytes32(value), bytes32(0));
+    }
+
+    /**
+     * @notice Removes a value from the set.
+     * @param self The uint256 set to update.
+     * @param value The uint256 value.
+     * @return True if the value was removed, that is if the value was in the set.
+     */
+    function remove(UintSet storage self, uint256 value) internal returns (bool) {
+        return _remove(self._inner, _UINT_SET_OFFSET, bytes32(value));
+    }
 }
