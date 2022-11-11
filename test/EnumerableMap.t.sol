@@ -424,3 +424,95 @@ contract Bytes32SetTest is Test {
         assertEq(_map.length(), 2);
     }
 }
+
+contract UintSetTest is Test {
+    using EnumerableMap for EnumerableMap.UintSet;
+
+    EnumerableMap.UintSet private _map;
+
+    function testAdd() external {
+        uint256 a = 1;
+
+        _map.add(a);
+
+        assertEq(_map.contains(a), true);
+        assertEq(_map.at(0), a);
+        assertEq(_map.length(), 1);
+    }
+
+    function testRemove() external {
+        uint256 a = 1;
+
+        _map.add(a);
+        _map.remove(a);
+
+        assertEq(_map.contains(a), false);
+        assertEq(_map.length(), 0);
+    }
+
+    function testAddMultiple() external {
+        uint256 a = 1;
+        uint256 b = 2;
+        uint256 c = 3;
+        uint256 d = 4;
+
+        _map.add(a);
+        _map.add(b);
+        _map.add(c);
+        _map.add(d);
+
+        assertEq(_map.contains(a), true);
+        assertEq(_map.contains(b), true);
+        assertEq(_map.contains(c), true);
+        assertEq(_map.contains(d), true);
+        assertEq(_map.at(0), a);
+        assertEq(_map.at(1), b);
+        assertEq(_map.at(2), c);
+        assertEq(_map.at(3), d);
+        assertEq(_map.length(), 4);
+    }
+
+    function testRemoveMultiple() external {
+        uint256 a = 1;
+        uint256 b = 2;
+        uint256 c = 3;
+        uint256 d = 4;
+
+        _map.add(a);
+        _map.add(b);
+        _map.add(c);
+        _map.add(d);
+        _map.remove(a);
+        _map.remove(b);
+        _map.remove(c);
+        _map.remove(d);
+
+        assertEq(_map.contains(a), false);
+        assertEq(_map.contains(b), false);
+        assertEq(_map.contains(c), false);
+        assertEq(_map.contains(d), false);
+        assertEq(_map.length(), 0);
+    }
+
+    function testAddAndRemovePartial() external {
+        uint256 a = 1;
+        uint256 b = 2;
+        uint256 c = 3;
+        uint256 d = 4;
+
+        _map.add(a);
+        _map.add(b);
+        _map.add(c);
+        _map.add(d);
+        _map.remove(a);
+        _map.remove(c);
+        // Order is not guaranteed. During the removal of a, the last element, d, is moved to the first position.
+        assertEq(_map.at(0), d);
+        assertEq(_map.at(1), b);
+        assertEq(_map.contains(a), false);
+        assertEq(_map.contains(b), true);
+        assertEq(_map.contains(c), false);
+        assertEq(_map.contains(d), true);
+        assertEq(_map.length(), 2);
+    }
+}
