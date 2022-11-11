@@ -14,6 +14,19 @@ pragma solidity ^0.8.0;
  *
  * - Elements are added, removed, updated, checked for existence and returned in constant time (O(1)).
  * - Elements are enumerated in linear time (O(n)). Enumeration is not guaranteed to be in any particular order.
+ *
+ * Usage:
+ *
+ * ```solidity
+ * contract Example {
+ *     // Add the library methods
+ *     using EnumerableMap for EnumerableMap.AddressToUint96Map;
+ *
+ *    // Declare a map state variable
+ *     EnumerableMap.AddressToUint96Map private _map;
+ * ```
+ *
+ * Currently, only address keys to uint96 values are supported.
  */
 library EnumerableMap {
     struct EnumerableMapping {
@@ -183,5 +196,111 @@ library EnumerableMap {
      */
     function _decodeValue(uint256 mask, bytes32 entry) private pure returns (bytes32 value) {
         value = entry & bytes32(mask);
+    }
+
+    /** Address to Uint96 Map */
+
+    /**
+     * @dev Structure to represent a map of address keys to uint96 values.
+     * The first 20 bytes of the key are used to store the address, and the last 12 bytes are used to store the uint96 value.
+     */
+    struct AddressToUint96Map {
+        EnumerableMapping _inner;
+    }
+
+    uint8 private constant _ADDRESS_TO_UINT96_MAP_OFFSET = 96;
+    uint256 private constant _ADDRESS_TO_UINT96_MAP_MASK = type(uint96).max;
+
+    /**
+     * @notice Returns the address key and the uint96 value at the given index.
+     * @param self The address to uint96 map to query.
+     * @param index The index.
+     * @return key The key at the given index.
+     * @return value The value at the given index.
+     */
+    function at(AddressToUint96Map storage self, uint256 index) internal view returns (address key, uint96 value) {
+        bytes32 entry = _at(self._inner, index);
+
+        key = address(uint160(uint256(_decodeKey(_ADDRESS_TO_UINT96_MAP_OFFSET, entry))));
+        value = uint96(uint256(_decodeValue(_ADDRESS_TO_UINT96_MAP_MASK, entry)));
+    }
+
+    /**
+     * @notice Returns the uint96 value associated with the given key.
+     * @dev Returns 0 if the key is not in the map. Use `contains` to check for existence.
+     * @param self The address to uint96 map to query.
+     * @param key The address key.
+     * @return value The uint96 value associated with the given key.
+     */
+    function get(AddressToUint96Map storage self, address key) internal view returns (uint96 value) {
+        bytes32 entry = _get(self._inner, bytes32(uint256(uint160(key))));
+
+        value = uint96(uint256(_decodeValue(_ADDRESS_TO_UINT96_MAP_MASK, entry)));
+    }
+
+    /**
+     * @notice Returns the number of elements in the map.
+     * @param self The address to uint96 map to query.
+     * @return The number of elements in the map.
+     */
+    function length(AddressToUint96Map storage self) internal view returns (uint256) {
+        return _length(self._inner);
+    }
+
+    /**
+     * @notice Returns true if the map contains the given key.
+     * @param self The address to uint96 map to query.
+     * @param key The address key.
+     * @return True if the map contains the given key.
+     */
+    function contains(AddressToUint96Map storage self, address key) internal view returns (bool) {
+        return _contains(self._inner, bytes32(uint256(uint160(key))));
+    }
+
+    /**
+     * @notice Adds a key-value pair to the map.
+     * @param self The address to uint96 map to update.
+     * @param key The address key.
+     * @param value The uint96 value.
+     * @return True if the key-value pair was added, that is if the key was not already in the map.
+     */
+    function add(
+        AddressToUint96Map storage self,
+        address key,
+        uint96 value
+    ) internal returns (bool) {
+        return
+            _add(self._inner, _ADDRESS_TO_UINT96_MAP_OFFSET, bytes32(uint256(uint160(key))), bytes32(uint256(value)));
+    }
+
+    /**
+     * @notice Removes a key-value pair from the map.
+     * @param self The address to uint96 map to update.
+     * @param key The address key.
+     * @return True if the key-value pair was removed, that is if the key was in the map.
+     */
+    function remove(AddressToUint96Map storage self, address key) internal returns (bool) {
+        return _remove(self._inner, _ADDRESS_TO_UINT96_MAP_OFFSET, bytes32(uint256(uint160(key))));
+    }
+
+    /**
+     * @notice Updates a key-value pair in the map.
+     * @param self The address to uint96 map to update.
+     * @param key The address key.
+     * @param value The uint96 value.
+     * @return True if the value was updated, that is if the key was already in the map.
+     */
+    function update(
+        AddressToUint96Map storage self,
+        address key,
+        uint96 value
+    ) internal returns (bool) {
+        return
+            _update(
+                self._inner,
+                _ADDRESS_TO_UINT96_MAP_OFFSET,
+                bytes32(uint256(uint160(key))),
+                bytes32(uint256(value))
+            );
     }
 }
