@@ -208,8 +208,8 @@ library EnumerableMap {
         EnumerableMapping _inner;
     }
 
-    uint8 private constant _ADDRESS_TO_UINT96_MAP_OFFSET = 96;
     uint256 private constant _ADDRESS_TO_UINT96_MAP_MASK = type(uint96).max;
+    uint8 private constant _ADDRESS_TO_UINT96_MAP_OFFSET = 96;
 
     /**
      * @notice Returns the address key and the uint96 value at the given index.
@@ -302,5 +302,67 @@ library EnumerableMap {
                 bytes32(uint256(uint160(key))),
                 bytes32(uint256(value))
             );
+    }
+
+    /** Bytes32 Set */
+
+    /**
+     * @dev Structure to represent a set of bytes32 values.
+     */
+    struct Bytes32Set {
+        EnumerableMapping _inner;
+    }
+
+    uint8 private constant _BYTES32_SET_OFFSET = 0;
+
+    // uint256 private constant _BYTES32_SET_MASK = type(uint256).max; // unused
+
+    /**
+     * @notice Returns the bytes32 value at the given index.
+     * @param self The bytes32 set to query.
+     * @param index The index.
+     * @return value The value at the given index.
+     */
+    function at(Bytes32Set storage self, uint256 index) internal view returns (bytes32 value) {
+        value = _at(self._inner, index);
+    }
+
+    /**
+     * @notice Returns the number of elements in the set.
+     * @param self The bytes32 set to query.
+     * @return The number of elements in the set.
+     */
+    function length(Bytes32Set storage self) internal view returns (uint256) {
+        return _length(self._inner);
+    }
+
+    /**
+     * @notice Returns true if the set contains the given value.
+     * @param self The bytes32 set to query.
+     * @param value The bytes32 value.
+     * @return True if the set contains the given value.
+     */
+    function contains(Bytes32Set storage self, bytes32 value) internal view returns (bool) {
+        return _contains(self._inner, value);
+    }
+
+    /**
+     * @notice Adds a value to the set.
+     * @param self The bytes32 set to update.
+     * @param value The bytes32 value.
+     * @return True if the value was added, that is if the value was not already in the set.
+     */
+    function add(Bytes32Set storage self, bytes32 value) internal returns (bool) {
+        return _add(self._inner, _BYTES32_SET_OFFSET, value, bytes32(0));
+    }
+
+    /**
+     * @notice Removes a value from the set.
+     * @param self The bytes32 set to update.
+     * @param value The bytes32 value.
+     * @return True if the value was removed, that is if the value was in the set.
+     */
+    function remove(Bytes32Set storage self, bytes32 value) internal returns (bool) {
+        return _remove(self._inner, _BYTES32_SET_OFFSET, value);
     }
 }

@@ -331,3 +331,96 @@ contract AddressToUint96MapTest is Test {
         assertEq(_map.length(), 2);
     }
 }
+
+contract Bytes32SetTest is Test {
+    using EnumerableMap for EnumerableMap.Bytes32Set;
+
+    EnumerableMap.Bytes32Set private _map;
+
+    function testAdd() external {
+        bytes32 a = bytes32(uint256(1));
+
+        _map.add(a);
+
+        assertEq(_map.contains(a), true);
+        assertEq(_map.at(0), a);
+        assertEq(_map.length(), 1);
+    }
+
+    function testRemove() external {
+        bytes32 a = bytes32(uint256(1));
+
+        _map.add(a);
+        _map.remove(a);
+
+        assertEq(_map.contains(a), false);
+        assertEq(_map.length(), 0);
+    }
+
+    function testAddMultiple() external {
+        bytes32 a = bytes32(uint256(1));
+        bytes32 b = bytes32(uint256(2));
+        bytes32 c = bytes32(uint256(3));
+        bytes32 d = bytes32(uint256(4));
+
+        _map.add(a);
+        _map.add(b);
+        _map.add(c);
+        _map.add(d);
+
+        assertEq(_map.contains(a), true);
+        assertEq(_map.contains(b), true);
+        assertEq(_map.contains(c), true);
+        assertEq(_map.contains(d), true);
+        assertEq(_map.at(0), a);
+        assertEq(_map.at(1), b);
+        assertEq(_map.at(2), c);
+        assertEq(_map.at(3), d);
+        assertEq(_map.length(), 4);
+    }
+
+    function testRemoveMultiple() external {
+        bytes32 a = bytes32(uint256(1));
+        bytes32 b = bytes32(uint256(2));
+        bytes32 c = bytes32(uint256(3));
+        bytes32 d = bytes32(uint256(4));
+
+        _map.add(a);
+        _map.add(b);
+        _map.add(c);
+        _map.add(d);
+        _map.remove(a);
+        _map.remove(b);
+        _map.remove(c);
+        _map.remove(d);
+
+        assertEq(_map.contains(a), false);
+        assertEq(_map.contains(b), false);
+        assertEq(_map.contains(c), false);
+        assertEq(_map.contains(d), false);
+        assertEq(_map.length(), 0);
+    }
+
+    function testAddAndRemovePartial() external {
+        bytes32 a = bytes32(uint256(1));
+        bytes32 b = bytes32(uint256(2));
+        bytes32 c = bytes32(uint256(3));
+        bytes32 d = bytes32(uint256(4));
+
+        _map.add(a);
+        _map.add(b);
+        _map.add(c);
+        _map.add(d);
+        _map.remove(a);
+        _map.remove(c);
+
+        assertEq(_map.contains(a), false);
+        assertEq(_map.contains(b), true);
+        assertEq(_map.contains(c), false);
+        assertEq(_map.contains(d), true);
+        // Order is not guaranteed. During the removal of a, the last element, d, is moved to the first position.
+        assertEq(_map.at(0), d);
+        assertEq(_map.at(1), b);
+        assertEq(_map.length(), 2);
+    }
+}
