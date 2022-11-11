@@ -427,4 +427,65 @@ library EnumerableMap {
     function remove(UintSet storage self, uint256 value) internal returns (bool) {
         return _remove(self._inner, _UINT_SET_OFFSET, bytes32(value));
     }
+
+    /** Address Set */
+
+    /**
+     * @dev Structure to represent a set of address values.
+     */
+    struct AddressSet {
+        EnumerableMapping _inner;
+    }
+
+    // uint256 private constant _ADDRESS_SET_MASK = type(uint160).max; // unused
+    uint8 private constant _ADDRESS_SET_OFFSET = 0;
+
+    /**
+     * @notice Returns the address value at the given index.
+     * @param self The address set to query.
+     * @param index The index.
+     * @return value The value at the given index.
+     */
+    function at(AddressSet storage self, uint256 index) internal view returns (address value) {
+        value = address(uint160(uint256(_at(self._inner, index))));
+    }
+
+    /**
+     * @notice Returns the number of elements in the set.
+     * @param self The address set to query.
+     * @return The number of elements in the set.
+     */
+    function length(AddressSet storage self) internal view returns (uint256) {
+        return _length(self._inner);
+    }
+
+    /**
+     * @notice Returns true if the set contains the given value.
+     * @param self The address set to query.
+     * @param value The address value.
+     * @return True if the set contains the given value.
+     */
+    function contains(AddressSet storage self, address value) internal view returns (bool) {
+        return _contains(self._inner, bytes32(uint256(uint160(value))));
+    }
+
+    /**
+     * @notice Adds a value to the set.
+     * @param self The address set to update.
+     * @param value The address value.
+     * @return True if the value was added, that is if the value was not already in the set.
+     */
+    function add(AddressSet storage self, address value) internal returns (bool) {
+        return _add(self._inner, _ADDRESS_SET_OFFSET, bytes32(uint256(uint160(value))), bytes32(0));
+    }
+
+    /**
+     * @notice Removes a value from the set.
+     * @param self The address set to update.
+     * @param value The address value.
+     * @return True if the value was removed, that is if the value was in the set.
+     */
+    function remove(AddressSet storage self, address value) internal returns (bool) {
+        return _remove(self._inner, _ADDRESS_SET_OFFSET, bytes32(uint256(uint160(value))));
+    }
 }
