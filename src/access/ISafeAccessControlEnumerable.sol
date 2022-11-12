@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.10;
 
-import "./IPendingOwnable.sol";
+import "./ISafeOwnable.sol";
 
-interface ISafeAccessControlEnumerable is IPendingOwnable {
+interface ISafeAccessControlEnumerable is ISafeOwnable {
     error SafeAccessControlEnumerable__OnlyRole(address account, bytes32 role);
     error SafeAccessControlEnumerable__OnlyOwnerOrRole(address account, bytes32 role);
     error SafeAccessControlEnumerable__RoleAlreadyGranted(address account, bytes32 role);

@@ -4,14 +4,14 @@ pragma solidity ^0.8.10;
 
 import "../structs/EnumerableMap.sol";
 import "./ISafeAccessControlEnumerable.sol";
-import "./PendingOwnable.sol";
+import "./SafeOwnable.sol";
 
 /**
  * @title Safe Access Control Enumerable
  * @author 0x0Louis
  * @notice This contract is used to manage a set of addresses that have been granted a specific role.
  */
-abstract contract SafeAccessControlEnumerable is PendingOwnable, ISafeAccessControlEnumerable {
+abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControlEnumerable {
     using EnumerableMap for EnumerableMap.AddressSet;
 
     struct EnumerableRoleData {

@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.10;
 
-interface IPendingOwnable {
-    error PendingOwnable__OnlyOwner();
-    error PendingOwnable__OnlyPendingOwner();
+interface ISafeOwnable {
+    error SafeOwnable__OnlyOwner();
+    error SafeOwnable__OnlyPendingOwner();
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event PendingOwnerSet(address indexed owner, address indexed pendingOwner);

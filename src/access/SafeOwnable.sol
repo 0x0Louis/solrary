@@ -2,14 +2,14 @@
 
 pragma solidity ^0.8.10;
 
-import "./IPendingOwnable.sol";
+import "./ISafeOwnable.sol";
 
 /**
- * @title Pending Ownable
+ * @title Safe Ownable
  * @author 0x0Louis
  * @notice This contract is used to manage the ownership of a contract in a two-step process.
  */
-abstract contract PendingOwnable is IPendingOwnable {
+abstract contract SafeOwnable is ISafeOwnable {
     address private _owner;
     address private _pendingOwner;
 
@@ -17,7 +17,7 @@ abstract contract PendingOwnable is IPendingOwnable {
      * @dev Modifier that checks if the caller is the owner.
      */
     modifier onlyOwner() {
-        if (msg.sender != owner()) revert PendingOwnable__OnlyOwner();
+        if (msg.sender != owner()) revert SafeOwnable__OnlyOwner();
         _;
     }
 
@@ -25,7 +25,7 @@ abstract contract PendingOwnable is IPendingOwnable {
      * @dev Modifier that checks if the caller is the pending owner.
      */
     modifier onlyPendingOwner() {
-        if (msg.sender != pendingOwner()) revert PendingOwnable__OnlyPendingOwner();
+        if (msg.sender != pendingOwner()) revert SafeOwnable__OnlyPendingOwner();
         _;
     }
 

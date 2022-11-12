@@ -143,7 +143,7 @@ contract SafeAccessControlEnumerableTest is Test {
     }
 
     function testCallRestrictedOnlyOwner() public {
-        vm.expectRevert(IPendingOwnable.PendingOwnable__OnlyOwner.selector);
+        vm.expectRevert(ISafeOwnable.SafeOwnable__OnlyOwner.selector);
         vm.prank(ALICE);
         MockSafeAccessControlEnumerableTest(address(mock)).restrictedOnlyOwner();
     }
