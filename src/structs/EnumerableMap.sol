@@ -27,6 +27,9 @@ pragma solidity ^0.8.0;
  * ```
  *
  * Currently, only address keys to uint96 values are supported.
+ *
+ * The library also provides enumerable sets. Using the same implementation as the enumerable maps,
+ * but the values and the keys are the same.
  */
 library EnumerableMap {
     struct EnumerableMapping {
