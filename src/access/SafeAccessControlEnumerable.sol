@@ -10,6 +10,7 @@ import "./SafeOwnable.sol";
  * @title Safe Access Control Enumerable
  * @author 0x0Louis
  * @notice This contract is used to manage a set of addresses that have been granted a specific role.
+ * Only the owner can be granted the DEFAULT_ADMIN_ROLE.
  */
 abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControlEnumerable {
     using EnumerableMap for EnumerableMap.AddressSet;
@@ -35,8 +36,9 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
      * @dev Modifier that checks if the caller has the role `role` or the role `DEFAULT_ADMIN_ROLE`.
      */
     modifier onlyOwnerOrRole(bytes32 role) {
-        if (!hasRole(role, msg.sender) && msg.sender != owner())
+        if (owner() != msg.sender && !hasRole(role, msg.sender)) {
             revert SafeAccessControlEnumerable__OnlyOwnerOrRole(msg.sender, role);
+        }
         _;
     }
 
@@ -101,8 +103,17 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
      * @param role The role to revoke.
      */
     function renounceRole(bytes32 role) public override {
-        if (!_revokeRole(role, msg.sender))
+        if (!_revokeRole(role, msg.sender)) {
             revert SafeAccessControlEnumerable__AccountDoesNotHaveRole(msg.sender, role);
+        }
+    }
+
+    function _transferOwnership(address newOwner) internal override {
+        address previousOwner = owner();
+        super._transferOwnership(newOwner);
+
+        _revokeRole(DEFAULT_ADMIN_ROLE, previousOwner);
+        _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
     }
 
     /**
@@ -113,7 +124,7 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
      * false otherwise.
      */
     function _grantRole(bytes32 role, address account) internal returns (bool) {
-        if (!_roles[role].members.add(account)) return false;
+        if (role == DEFAULT_ADMIN_ROLE && owner() != account || !_roles[role].members.add(account)) return false;
 
         emit RoleGranted(msg.sender, role, account);
         return true;
@@ -127,7 +138,7 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
      * false otherwise.
      */
     function _revokeRole(bytes32 role, address account) internal returns (bool) {
-        if (!_roles[role].members.remove(account)) return false;
+        if (role == DEFAULT_ADMIN_ROLE && owner() != account || !_roles[role].members.remove(account)) return false;
 
         emit RoleRevoked(msg.sender, role, account);
         return true;

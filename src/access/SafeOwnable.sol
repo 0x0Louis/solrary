@@ -63,11 +63,15 @@ abstract contract SafeOwnable is ISafeOwnable {
      * @dev Can only be called by the pending owner.
      */
     function becomeOwner() public virtual override onlyPendingOwner {
-        _transferOwnership(_pendingOwner);
+        address newOwner = _pendingOwner;
+
         _setPendingOwner(address(0));
+        _transferOwnership(newOwner);
     }
 
-    /** Private Functions */
+    /**
+     * Private Functions
+     */
 
     /**
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
