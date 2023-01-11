@@ -35,8 +35,9 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
      * @dev Modifier that checks if the caller has the role `role` or the role `DEFAULT_ADMIN_ROLE`.
      */
     modifier onlyOwnerOrRole(bytes32 role) {
-        if (!hasRole(role, msg.sender) && msg.sender != owner())
+        if (owner() != msg.sender && !hasRole(role, msg.sender)) {
             revert SafeAccessControlEnumerable__OnlyOwnerOrRole(msg.sender, role);
+        }
         _;
     }
 
@@ -101,8 +102,9 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
      * @param role The role to revoke.
      */
     function renounceRole(bytes32 role) public override {
-        if (!_revokeRole(role, msg.sender))
+        if (!_revokeRole(role, msg.sender)) {
             revert SafeAccessControlEnumerable__AccountDoesNotHaveRole(msg.sender, role);
+        }
     }
 
     /**
