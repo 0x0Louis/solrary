@@ -10,6 +10,7 @@ import "./SafeOwnable.sol";
  * @title Safe Access Control Enumerable
  * @author 0x0Louis
  * @notice This contract is used to manage a set of addresses that have been granted a specific role.
+ * Only the owner can be granted the DEFAULT_ADMIN_ROLE.
  */
 abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControlEnumerable {
     using EnumerableMap for EnumerableMap.AddressSet;
@@ -107,6 +108,14 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
         }
     }
 
+    function _transferOwnership(address newOwner) internal override {
+        address previousOwner = owner();
+        super._transferOwnership(newOwner);
+
+        _revokeRole(DEFAULT_ADMIN_ROLE, previousOwner);
+        _grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+    }
+
     /**
      * @notice Grants `role` to `account`.
      * @param role The role to grant.
@@ -115,7 +124,7 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
      * false otherwise.
      */
     function _grantRole(bytes32 role, address account) internal returns (bool) {
-        if (!_roles[role].members.add(account)) return false;
+        if (role == DEFAULT_ADMIN_ROLE && owner() != account || !_roles[role].members.add(account)) return false;
 
         emit RoleGranted(msg.sender, role, account);
         return true;
@@ -129,7 +138,7 @@ abstract contract SafeAccessControlEnumerable is SafeOwnable, ISafeAccessControl
      * false otherwise.
      */
     function _revokeRole(bytes32 role, address account) internal returns (bool) {
-        if (!_roles[role].members.remove(account)) return false;
+        if (role == DEFAULT_ADMIN_ROLE && owner() != account || !_roles[role].members.remove(account)) return false;
 
         emit RoleRevoked(msg.sender, role, account);
         return true;
